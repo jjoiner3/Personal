@@ -157,10 +157,10 @@ plt.ylim(Lexp[0]*.999,Lexp[nr-1]*1.001)
 
 locs,labels = plt.yticks()
 plt.yticks(locs, map(lambda x: "%.3f" % x, locs))
-
-plt.title('Pipe Length In Time\n')
+#plt.xticks(locs, map(lambda x: "%.3f" % x, locs))
+plt.title('Pipe Length vs Temp\n')
 plt.ylabel('Pipe Length, ft')
-plt.xlabel('Time, sec');
+plt.xlabel('Temp, deg F');
 
 plt.tight_layout()
 plt.show()
