@@ -27,8 +27,8 @@ c23 = c13
 
 c33 = E*(1.-nu)/((1.+nu)*(1.-2.*nu))
 Beta = (c13+c23+c33)*a
-#Beta = (c33)*a
-2022169536
+
+
 A = c33*a+Beta
 # Conversion Factors
 in2mm = 25.4 #converts to SI units
@@ -52,10 +52,6 @@ dr = Pipe_thick/(nr-1)
 # Stability Requirements
 sigma = 1/2.0
 
-#dt= sigma * dr*dr/A/alpha
-#dt2= sigma * dr*dr/(alpha**2)
-#dt3= sigma * dr*dr/alpha
-
 
 dt = sigma * dr*dr/alpha
 
@@ -63,9 +59,9 @@ dt = sigma * dr*dr/alpha
 # Initial Conditions
 Tins = 10. # Install Temperature deg F
 Tins = ((Tins-32)*5/9 + 274.15) #converted to Kelvin
-Ti = numpy.ones((nr,nt))*Tins#*Tins#*((Tins-32)*5/9 + 274.15)# Initial Temperature array converted to deg C
+Ti = numpy.ones((nr))*Tins#*Tins#*((Tins-32)*5/9 + 274.15)# Initial Temperature array converted to deg C
 Topp = 350. # Operational Temperature deg F
-Ti[0,:] = (Topp-32)*5/9  + 274.15#Sets the temperature at the inner diameter to Operational Temp, deg C  
+Ti[0] = (Topp-32)*5/9  + 274.15#Sets the temperature at the inner diameter to Operational Temp, deg C  
 L = numpy.ones((nr,nt))*L0 #Initalizes array for lengths
 #dL = numpy.zeros(nr)
 
@@ -74,40 +70,32 @@ T = Ti.copy()
 Lexp = L.copy()
 
 # Stress and Strain Arrays, Initailly Zero Stress or Strain
-StressI = numpy.zeros((nr,nt))
-StrainI = numpy.zeros((nr,nt))
+StrainI = numpy.zeros((nr))
 
 # Final Stress and Strain
-StressF = StressI.copy()
-StrainF = StressI.copy()
+StrainF = StrainI.copy()
 
 # Final Temperature
 T_Break = (Topp-32)*5/9 + 274.15
 
-for n in range(1,nt):  
+for n in range(nt):  
 
 #   Solve for Temp
     Tn = T.copy() 
-    T[1:-1,n] = Tn[1:-1,n-1] + alpha*dt/dr**2*(Tn[2:,n-1] -2*Tn[1:-1,n-1] + Tn[0:-2,n-1])
-    T[-1,n] = T[-2,n]
+    T[1:-1] = Tn[1:-1] + alpha*dt/dr**2*(Tn[2:] -2*Tn[1:-1] + Tn[0:-2])
+    T[-1] = T[-2]
     
-    #StressN = StressF.copy()
-    #StressF[1:-1] = StressN[1:-1] + A*alpha*dt/dr**2*(Tn[2:] -2*Tn[1:-1] + Tn[0:-2])
-    #StressF[0] = StressF[1]
-    #StressF[-1] = StressF[-2]
-
-
     StrainN = StrainF.copy()
-    StrainF[1:-1,n] = StrainN[1:-1,n-1] + (alpha**2)*dt/dr**2*(Tn[2:,n-1] -2*Tn[1:-1,n-1] + Tn[0:-2,n-1])
-    StrainF[0,n] = StrainF[1,n]
-    StrainF[-1,n] = StrainF[-2,n]
+    StrainF[1:-1] = StrainN[1:-1] + (alpha**2)*dt/dr**2*(Tn[2:] -2*Tn[1:-1] + Tn[0:-2])
+    StrainF[0] = StrainF[1]
+    StrainF[-1] = StrainF[-2]
 
-    Lexp[:,n] = StrainF[:,n]*L[:,n]+L[:,n]
+    Lexp[:,n] = StrainF[:]*L[:,n]+L[:,n]
     
     #Lexp = Lexp+dL
     
 # Determining Stop Condition
-    T_current = T[nr-1,n] #Temp at OD
+    T_current = T[nr-1] #Temp at OD
     T_fin = T_Break-T_current #Difference between Temp at OD and Temp at ID
     n_stop = n + 1
     if Topp > Tins:
