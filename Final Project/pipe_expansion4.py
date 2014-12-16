@@ -70,6 +70,10 @@ T = Ti.copy()
 Lexp = L.copy()
 
 # Stress and Strain Arrays, Initailly Zero Stress or Strain
+<<<<<<< HEAD
+=======
+StressI = numpy.zeros((nr))
+>>>>>>> origin/master
 StrainI = numpy.zeros((nr))
 
 # Final Stress and Strain
